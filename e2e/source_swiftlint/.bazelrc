@@ -1,0 +1,5 @@
+build --remote_cache=grpcs://remote.buildbuddy.io
+
+build --host_macos_minimum_os=12.0
+build --aspects=@com_github_thii_rules_swiftlint//swiftlint:defs.bzl%swiftlint_aspect
+build --@com_github_thii_rules_swiftlint//swiftlint:config=//:swiftlint_config

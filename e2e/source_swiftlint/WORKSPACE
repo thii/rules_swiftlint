@@ -1,0 +1,88 @@
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+# rules_apple definitions
+
+http_archive(
+    name = "build_bazel_rules_apple",
+    sha256 = "f94e6dddf74739ef5cb30f000e13a2a613f6ebfa5e63588305a71fce8a8a9911",
+    url = "https://github.com/bazelbuild/rules_apple/releases/download/1.1.3/rules_apple.1.1.3.tar.gz",
+)
+
+load(
+    "@build_bazel_rules_apple//apple:repositories.bzl",
+    "apple_rules_dependencies",
+)
+
+apple_rules_dependencies()
+
+load(
+    "@build_bazel_rules_swift//swift:repositories.bzl",
+    "swift_rules_dependencies",
+)
+
+swift_rules_dependencies()
+
+load(
+    "@build_bazel_rules_swift//swift:extras.bzl",
+    "swift_rules_extra_dependencies",
+)
+
+swift_rules_extra_dependencies()
+
+load(
+    "@build_bazel_apple_support//lib:repositories.bzl",
+    "apple_support_dependencies",
+)
+
+apple_support_dependencies()
+
+# SwiftLint definitions
+
+http_archive(
+    name = "SwiftLint",
+    sha256 = "b8c4d765bcd8b533fcc2e15f32482a1a17572f143b65af388f7d5ac99994a99a",
+    url = "https://github.com/realm/SwiftLint/releases/download/0.50.3/bazel.tar.gz",
+)
+
+load("@SwiftLint//bazel:repos.bzl", "swiftlint_repos")
+
+swiftlint_repos()
+
+load("@SwiftLint//bazel:deps.bzl", "swiftlint_deps")
+
+swiftlint_deps()
+
+http_archive(
+    name = "com_github_buildbuddy_io_rules_xcodeproj",
+    sha256 = "1e2f40eaee520093343528ac9a4a9180b0500cdd83b1e5e2a95abc8c541686e2",
+    url = "https://github.com/buildbuddy-io/rules_xcodeproj/releases/download/1.1.0/release.tar.gz",
+)
+
+load(
+    "@com_github_buildbuddy_io_rules_xcodeproj//xcodeproj:repositories.bzl",
+    "xcodeproj_rules_dependencies",
+)
+
+xcodeproj_rules_dependencies()
+
+# rules_swiftlint definitions
+
+# Override http_archive for local testing
+local_repository(
+    name = "com_github_thii_rules_swiftlint",
+    path = "../..",
+)
+
+load(
+    "@com_github_thii_rules_swiftlint//swiftlint:repositories.bzl",
+    "swiftlint_rules_dependencies",
+)
+
+swiftlint_rules_dependencies()
+
+load(
+    "@com_github_thii_rules_swiftlint//swiftlint:defs.bzl",
+    "swiftlint_register_toolchains",
+)
+
+swiftlint_register_toolchains()
