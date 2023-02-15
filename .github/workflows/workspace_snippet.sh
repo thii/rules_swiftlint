@@ -19,9 +19,9 @@ http_archive(
     name = "rules_swiftlint",
     sha256 = "${SHA}",
     strip_prefix = "${PREFIX}",
-    url = "https://github.com/thii/bazel_swiftlint/releases/download/${TAG}/${ARCHIVE}",
+    url = "https://github.com/thii/rules_swiftlint/releases/download/${TAG}/${ARCHIVE}",
 )
 EOF
 
-awk 'f;/--SNIP--/{f=1}' e2e/workspace/WORKSPACE
+awk 'f;/--SNIP--/{f=1}' e2e/binary_swiftlint/WORKSPACE
 echo "\`\`\`" 
