@@ -51,8 +51,8 @@ http_archive(
 
 http_archive(
     name = "com_github_thii_rules_swiftlint",
-    sha256 = "<update this>",
-    url = "https://github.com/thii/rules_swiftlint/releases/download/0.0.1/rules_swiftlint.zip",
+    sha256 = "<see https://github.com/thii/rules_swiftlint/releases>",
+    url = "<see https://github.com/thii/rules_swiftlint/releases>",
 )
 
 load(
@@ -81,8 +81,8 @@ b. If you want to build SwiftLint from source:
 ```starlark
 http_archive(
     name = "com_github_thii_rules_swiftlint",
-    sha256 = "<update this>",
-    url = "https://github.com/thii/rules_swiftlint/releases/download/0.0.1/rules_swiftlint.zip",
+    sha256 = "<see https://github.com/thii/rules_swiftlint/releases>",
+    url = "<see https://github.com/thii/rules_swiftlint/releases>",
 )
 
 load(
