@@ -19,9 +19,9 @@ Actions](https://bazel.build/extending/rules#validation_actions) to run
 SwiftLint. This is special in that its outputs are always requested, regardless
 of the value of the `--output_groups` flag; and the validation is skipped when
 the target is depended upon as an implicit dependency, or as a tool, or is
-build in the `exec` (or the legacy `host`) configuration---it only runs on code
-that goes into your app. It is, however, possible to validate your Swift tools
-by building or testing your tools directly.
+build in the `exec` (or the legacy `host`) configuration—in short, it only runs
+on code that goes into your app. It is, however, possible to validate your
+Swift tools by building or testing your tools directly.
 
 Note that `rules_swiftlint` only validates, but does _not_ format your Swift
 code, because source files are immutable to Bazel during a build or a test. If
@@ -34,7 +34,7 @@ bazel run @SwiftLint//:swiftlint -- [<SwiftLint flags>]
 
 ## Installation
 
-1. WORKSPACE snippet
+1. WORKSPACE setup
 
 a. If you want to use a prebuilt binary of SwiftLint:
 
@@ -102,7 +102,7 @@ swiftlint_register_toolchains()
 
 2. Declare a target for your SwiftLint configuration files
 
-This is optional if you don't have your own SwiftLint configuration file.
+Skip this step if you don't have your own SwiftLint configuration file.
 
 Declare this in your BUILD file (e.g., in the top-level BUILD file). If you
 have multiple configuration files, add them all to this `filegroup` target.
@@ -118,6 +118,8 @@ filegroup(
 
 ```
 build --aspects=@com_github_thii_rules_swiftlint//swiftlint:defs.bzl%swiftlint_aspect
+
+# This flag is only required if you have your own SwiftLint configuration file.
 build --@com_github_thii_rules_swiftlint//swiftlint:config=//:swiftlint_config
 ```
 
