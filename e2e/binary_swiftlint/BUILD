@@ -11,7 +11,10 @@ load(
 
 filegroup(
     name = "swiftlint_config",
-    srcs = [".swiftlint.yml"],
+    srcs = [
+        ".swiftlint.yml",
+        ".swiftlint_child.yml",
+    ],
 )
 
 swift_library(

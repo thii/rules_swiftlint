@@ -54,7 +54,7 @@ def _swiftlint_aspect_impl(target, ctx):
         args.add(validation_output)
         args.add("lint")
 
-        args.add_all("--config", ctx.files._config)
+        args.add_all(ctx.files._config, before_each = "--config")
 
         # Avoid using SwiftLint's own caching mechanism to make the validation
         # action hermetic. The action is already cached by Bazel.
