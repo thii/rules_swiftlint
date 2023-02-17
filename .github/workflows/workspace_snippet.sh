@@ -15,7 +15,7 @@ WORKSPACE snippet:
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
-    name = "rules_swiftlint",
+    name = "com_github_thii_rules_swiftlint",
     sha256 = "${SHA}",
     url = "https://github.com/thii/rules_swiftlint/releases/download/${TAG}/${ARCHIVE}",
 )
