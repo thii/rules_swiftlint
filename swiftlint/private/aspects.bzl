@@ -1,5 +1,4 @@
 load("@bazel_skylib//lib:paths.bzl", "paths")
-load("@build_bazel_rules_swift//swift:swift.bzl", "SwiftInfo")
 load(":utils.bzl", "owner_relative_path")
 
 def _declare_validation_output_file(actions, target_name, src):
@@ -32,8 +31,6 @@ def _find_formattable_srcs(target, aspect_ctx):
     Returns:
         list: A list of formattable sources (`File`).
     """
-    if SwiftInfo not in target:
-        return []
 
     # Ignore external targets
     # TODO: Support --experimental_sibling_repository_layout
@@ -46,21 +43,19 @@ def _find_formattable_srcs(target, aspect_ctx):
             if tag in aspect_ctx.rule.attr.tags:
                 return []
 
-    # Filter out any duplicate or generated files
-    srcs = [
-        src
-        for src in aspect_ctx.rule.files.srcs
-        if src.is_source and src.extension == "swift"
-    ]
+    # Filter out generated files and non-Swift files
+    srcs = []
+    if hasattr(aspect_ctx.rule.files, "srcs"):
+        srcs.extend([
+            src
+            for src in aspect_ctx.rule.files.srcs
+            if src.is_source and src.extension == "swift"
+        ])
 
     return sorted(srcs)
 
 def _swiftlint_aspect_impl(target, ctx):
     srcs = _find_formattable_srcs(target, ctx)
-
-    # If there are no formattable sources, do nothing.
-    if not srcs:
-        return []
 
     toolchain = ctx.toolchains[Label("//swiftlint:toolchain_type")]
     swiftlint_executable = toolchain.swiftlint_executable
