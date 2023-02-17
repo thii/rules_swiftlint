@@ -75,10 +75,13 @@ def _swiftlint_aspect_impl(target, ctx):
             use_default_shell_env = True,
         )
 
-    transitive_validation_outputs = [
-        d[OutputGroupInfo]._validation
-        for d in ctx.rule.attr.deps
-    ]
+    transitive_validation_outputs = []
+    for d in ctx.rule.attr.deps:
+        if OutputGroupInfo not in d:
+            continue
+        if not hasattr(d[OutputGroupInfo], "_validation"):
+            continue
+        transitive_validation_outputs.append(d[OutputGroupInfo]._validation)
 
     return [
         OutputGroupInfo(
