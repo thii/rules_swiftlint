@@ -1,4 +1,26 @@
+load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@build_bazel_rules_swift//swift:swift.bzl", "SwiftInfo")
+load(":utils.bzl", "owner_relative_path")
+
+def _declare_validation_output_file(actions, target_name, src):
+    """Declares a file for a per-source SwiftLint validation output.
+
+    Args:
+        actions: The context's actions object.
+        target_name: The name of the target being built.
+        src: A `File` representing the source file being compiled.
+
+    Returns:
+        The declared `File`.
+    """
+    validation_output_dir = "{}_swiftlint".format(target_name)
+    owner_rel_path = owner_relative_path(src)
+    basename = paths.basename(owner_rel_path)
+    dirname = paths.join(validation_output_dir, paths.dirname(owner_rel_path))
+
+    return actions.declare_file(
+        paths.join(dirname, "{}.validation".format(basename)),
+    )
 
 def _find_formattable_srcs(target, aspect_ctx):
     """Parse a target for SwiftLint formattable sources.
@@ -46,7 +68,11 @@ def _swiftlint_aspect_impl(target, ctx):
 
     direct_validation_outputs = []
     for src in srcs:
-        validation_output = ctx.actions.declare_file(src.basename + ".validation")
+        validation_output = _declare_validation_output_file(
+            actions = ctx.actions,
+            target_name = target.label.name,
+            src = src,
+        )
         direct_validation_outputs.append(validation_output)
 
         args = ctx.actions.args()
