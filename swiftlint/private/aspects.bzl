@@ -52,7 +52,7 @@ def _find_formattable_srcs(target, aspect_ctx):
             if src.is_source and src.extension == "swift"
         ])
 
-    return sorted(srcs)
+    return srcs
 
 def _swiftlint_aspect_impl(target, ctx):
     srcs = _find_formattable_srcs(target, ctx)
