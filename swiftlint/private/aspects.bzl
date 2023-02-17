@@ -1,6 +1,42 @@
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load(":utils.bzl", "owner_relative_path")
 
+_ATTR_ASPECTS = [
+    "_implicit_tests",
+    "additional_contents",
+    "app_clips",
+    "bundles",
+    "deps",
+    "extension",
+    "extensions",
+    "frameworks",
+    "settings_bundle",
+    "srcs",
+    "test_host",
+    "tests",
+    "watch_application",
+]
+
+def _collect_dependencies(rule_attr, attr_name):
+    """Collects Bazel targets for a dependency attr.
+
+    Args:
+      rule_attr: The Bazel rule.attr whose dependencies should be collected.
+      attr_name: attribute name to inspect for dependencies.
+
+    Returns:
+      A list of the Bazel target dependencies of the given rule.
+    """
+    return [
+        dep
+        for dep in _getattr_as_list(rule_attr, attr_name)
+        if type(dep) == "Target" and
+           (OutputGroupInfo in dep and hasattr(
+               dep[OutputGroupInfo],
+               "_validation",
+           ))
+    ]
+
 def _declare_validation_output_file(actions, target_name, src):
     """Declares a file for a per-source SwiftLint validation output.
 
@@ -20,6 +56,40 @@ def _declare_validation_output_file(actions, target_name, src):
     return actions.declare_file(
         paths.join(dirname, "{}.validation".format(basename)),
     )
+
+def _getattr_as_list(obj, attr_path):
+    """Returns the value at attr_path as a list.
+
+    This handles normalization of attributes containing a single value for use in
+    methods expecting a list of values.
+
+    Args:
+      obj: The struct whose attributes should be parsed.
+      attr_path: Dotted path of attributes whose value should be returned in
+          list form.
+
+    Returns:
+      A list of values for obj at attr_path or [] if the struct has
+      no such attribute.
+    """
+    val = _get_opt_attr(obj, attr_path)
+    if not val:
+        return []
+
+    if type(val) == "list":
+        return val
+    elif type(val) == "dict":
+        return val.keys()
+    return [val]
+
+def _get_opt_attr(obj, attr_path):
+    """Returns the value at attr_path on the given object if it is set."""
+    attr_path = attr_path.split(".")
+    for a in attr_path:
+        if not obj or not hasattr(obj, a):
+            return None
+        obj = getattr(obj, a)
+    return obj
 
 def _find_formattable_srcs(target, aspect_ctx):
     """Parse a target for SwiftLint formattable sources.
@@ -97,12 +167,10 @@ def _swiftlint_aspect_impl(target, ctx):
         )
 
     transitive_validation_outputs = []
-    for d in ctx.rule.attr.deps:
-        if OutputGroupInfo not in d:
-            continue
-        if not hasattr(d[OutputGroupInfo], "_validation"):
-            continue
-        transitive_validation_outputs.append(d[OutputGroupInfo]._validation)
+    for attr_name in _ATTR_ASPECTS:
+        deps = _collect_dependencies(ctx.rule.attr, attr_name)
+        for dep in deps:
+            transitive_validation_outputs.append(dep[OutputGroupInfo]._validation)
 
     return [
         OutputGroupInfo(
@@ -127,7 +195,7 @@ swiftlint_aspect = aspect(
 The filegroup represented one or more SwiftLint configuration files.""",
         ),
     },
-    attr_aspects = ["deps"],
+    attr_aspects = _ATTR_ASPECTS,
     fragments = ["swift"],
     host_fragments = ["swift"],
     implementation = _swiftlint_aspect_impl,
