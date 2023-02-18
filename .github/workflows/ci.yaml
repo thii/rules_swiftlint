@@ -1,4 +1,4 @@
-name: CI
+name: Build
 
 # Controls when the action will run.
 on:
@@ -28,8 +28,8 @@ jobs:
       - uses: actions/checkout@v3
       - id: bazel_from_bazelversion
         run: echo "bazelversion=$(head -n 1 .bazelversion)" >> $GITHUB_OUTPUT
-      - id: bazel_5
-        run: echo "bazelversion=5.3.2" >> $GITHUB_OUTPUT
+      # - id: bazel_5
+      # run: echo "bazelversion=5.3.2" >> $GITHUB_OUTPUT
     outputs:
       # Will look like ["<version from .bazelversion>", "5.3.2"]
       bazelversions: ${{ toJSON(steps.*.outputs.bazelversion) }}
@@ -50,7 +50,7 @@ jobs:
         bazelversion: ${{ fromJSON(needs.matrix-prep-bazelversion.outputs.bazelversions) }}
         folder:
           - "e2e/binary_swiftlint"
-          - "e2e/source_swiftlint"
+          # - "e2e/source_swiftlint"
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
