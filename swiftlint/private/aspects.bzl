@@ -2,18 +2,23 @@ load("@bazel_skylib//lib:paths.bzl", "paths")
 load(":utils.bzl", "owner_relative_path")
 
 _ATTR_ASPECTS = [
-    "_implicit_tests",
-    "additional_contents",
-    "app_clips",
-    "bundles",
+    # General rules
     "deps",
+    "srcs",
+
+    # `*os_unit_test` rules
+    "test_host",
+
+    # Native `test_suite` rule (expanded from rules_apple's `*_test_suite`
+    # rules)
+    "tests",
+    "_implicit_tests",
+
+    # `*os_application` rules
+    "app_clips",
     "extension",
     "extensions",
     "frameworks",
-    "settings_bundle",
-    "srcs",
-    "test_host",
-    "tests",
     "watch_application",
 ]
 
