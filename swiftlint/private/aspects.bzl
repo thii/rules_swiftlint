@@ -152,6 +152,9 @@ def _swiftlint_aspect_impl(target, ctx):
 
         args.add_all(ctx.files._config, before_each = "--config")
 
+        # Force SwiftLint to exclude files specified in the config `excluded`
+        args.add("--force-exclude")
+
         # Avoid using SwiftLint's own caching mechanism to make the validation
         # action hermetic. The action is already cached by Bazel.
         args.add("--no-cache")
